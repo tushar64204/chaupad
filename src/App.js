@@ -70,7 +70,7 @@ const MenuItem = ({ item, onAdd, onRemove, isHindi }) => (
 
 const App = () => {
   const [menuItems, setMenuItems] = useState([
-    { id: 1, name: 'Paneer Roll', nameHi: 'पनीर रोल', description: 'Delicious paneer roll', descriptionHi: 'स्वादिष्ट पनीर रोल', category: 'MAINCOURSE', quantity: 0, image: paneerRollImage },
+    { id: 1, name: 'Paneer Roll', nameHi: 'पनीर रोल', description: 'Delicious paneer roll', descriptionHi: 'स्वादिष्ट पनीर रोल', category: 'maincourse', quantity: 0, image: paneerRollImage },
     { id: 2, name: 'Momos', nameHi: 'मोमोज़', description: 'Steamed momos', descriptionHi: 'स्टीम्ड मोमोज़', category: 'fastfood', quantity: 0, image: momosImage },
     { id: 3, name: 'Veg Chow Mein', nameHi: 'वेज चाउमीन', description: 'Stir-fried noodles', descriptionHi: 'तले हुए नूडल्स', category: 'chinese', quantity: 0, image: chowMeinImage },
     { id: 4, name: 'Gulab Jamun', nameHi: 'गुलाब जामुन', description: 'Sweet syrupy dessert', descriptionHi: 'मीठा सिरपयुक्त मिठाई', category: 'dessert', quantity: 0, image: gulabJamunImage },
