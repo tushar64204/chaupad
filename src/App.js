@@ -730,7 +730,7 @@ const App = () => {
 
     try {
         // Send the order data to the server
-        const response = await axios.post('https://serverfoodcart.onrender.com', orderData);
+        const response = await axios.post('https://serverfoodcart.onrender.com/api/orders', orderData);
         console.log('API Response:', response.data);
         
         // Extract the status from the response and set it in the state
