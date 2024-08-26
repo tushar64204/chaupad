@@ -154,6 +154,9 @@
   overflow-x: auto; /* Enables horizontal scrolling */
   white-space: nowrap; /* Ensures items stay in a row when scrolling */
   max-height: 200px; /* Limits the height to fit two rows */
+  flex-wrap: nowrap; /* No wrapping to maintain horizontal scroll */
+
+  overflow-y: hidden; /* Disable vertical scroll */
 }
 
 .category {
@@ -162,6 +165,8 @@
   align-items: center;
   margin: 10px;
   width: 30%; /* Controls the width of each item */
+  width: auto; /* Items resize dynamically in the row */
+  margin-right: 10px; /* Add space between the items */
 }
 
 .category img {

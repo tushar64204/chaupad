@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import QRCode from 'qrcode.react';
 import './App.css';
+import axios from 'axios';
+
+
+
+
+
 import { FaMinus, FaPlus, FaTrash, FaChevronDown, FaShoppingBasket, FaArrowUp  } from 'react-icons/fa';
 
 import { FaUtensils, FaBreadSlice, FaPizzaSlice, FaHamburger, FaCoffee, FaIceCream } from 'react-icons/fa';
@@ -631,6 +637,7 @@ const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isBasketOpen, setIsBasketOpen] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState(''); // Payment method state
+  const [orderStatus, setOrderStatus] = useState('');
   
   
 
@@ -688,23 +695,68 @@ const App = () => {
     return menuItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    // Filter and map order items
     const orderItems = menuItems.filter(item => item.quantity > 0)
-      .map(item => `${isHindi ? item.nameHi : item.name} x ${item.quantity}`).join(', ');
+        .map(item => `${isHindi ? item.nameHi : item.name} x ${item.quantity}`).join(', ');
 
+    // Calculate total amounts and GST
     const totalAmount = calculateTotal();
     const gst = totalAmount * 0.05;
     const grandTotal = totalAmount + gst;
 
-    const message = `Name: ${name}\nTable: ${tableNumber}\nOrder: ${orderItems}\nTotal: ₹${totalAmount}\nGST (5%): ₹${gst.toFixed(2)}\nGrand Total: ₹${grandTotal.toFixed(2)}\nPayment Method:${paymentMethod}`;
+    // Generate a random 6-digit order number
+    const orderNumber = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const whatsappLink = `https://wa.me/919817409607?text=${encodeURIComponent(message)}`;
-    window.open(whatsappLink, '_blank');
+    // Get the current date and time
+    const date = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const time = new Date().toLocaleTimeString('en-GB'); // HH:MM:SS format
 
- 
+    // Build the order data object
+    const orderData = {
+        name: name,
+        table: tableNumber,
+        order: orderItems,
+        total: totalAmount,
+        gst: gst.toFixed(2),
+        grandTotal: grandTotal.toFixed(2),
+        paymentMethod: paymentMethod,
+        orderNumber: orderNumber,  // Add generated order number
+        date: date,                // Add current date
+        time: time                 // Add current time
+    };
 
-    return grandTotal; // Return the grand total
-  };
+    console.log('Order Data:', orderData);
+
+    try {
+        // Send the order data to the server
+        const response = await axios.post('http://localhost:8080/api/orders', orderData);
+        console.log('API Response:', response.data);
+        
+        // Extract the status from the response and set it in the state
+        const status = response.data.status;  // Assuming the backend sends status in response
+        setOrderStatus(status);  // Update the UI with the order status
+
+        alert('Order submitted successfully');
+    } catch (error) {
+        // Handle error cases
+        if (error.response) {
+            console.error('API Error Response:', error.response.data);
+            console.error('Status Code:', error.response.status);
+            console.error('Headers:', error.response.headers);
+            alert(`Failed to submit order. Status Code: ${error.response.status}`);
+        } else if (error.request) {
+            console.error('API Error Request:', error.request);
+            alert('Failed to submit order. No response from the server.');
+        } else {
+            console.error('API Error Message:', error.message);
+            alert('Failed to submit order. Error: ' + error.message);
+        }
+    }
+
+    return grandTotal;
+};
+
 
   const grandTotal = 1.05 * calculateTotal(); // Call the function to calculate the grand total
 
@@ -1025,8 +1077,8 @@ const App = () => {
           <label>
             <input
               type="radio"
-              value="COD"
-              checked={paymentMethod === "COD"}
+              value="Cash"
+              checked={paymentMethod === "Cash"}
               onChange={(e) => setPaymentMethod(e.target.value)}
             />
             Cash on Delivery (COD)
@@ -1042,10 +1094,12 @@ const App = () => {
           </label>
         </div>
         <br></br>
+         {/* Display order status */}
+        {orderStatus && <p>Order Status: {orderStatus}</p>}
         <button className="checkout-button"onClick={handleCheckout}>
           {isHindi ? 'व्हाट्सएप पर भेजें' : 'Send on WhatsApp'}
         </button>
-       
+        {/* <Route path="/admin" element={<AdminPanel />} /> */}
         <UpiPayment grandTotal={grandTotal} />
       </div>
     </div>
